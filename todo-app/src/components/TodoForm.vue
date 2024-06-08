@@ -34,7 +34,7 @@ const handleTodoInput = () => {
 
 <template>
     <form @submit.prevent="handleTodoInput">
-        <input type="text" v-model="todo.title"/>
+        <input type="text" v-model="todo.title" placeholder="Enter your task"/>
         <button type="submit" class="submit-btn">Add To Do</button>
     </form>
 </template>
