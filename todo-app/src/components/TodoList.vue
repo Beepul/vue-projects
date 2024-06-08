@@ -1,13 +1,34 @@
 <script setup>
 import TodoItem from './TodoItem.vue';
 
+const props = defineProps({
+  todos: Array
+})
+
+const emit = defineEmits(['removeTodoInParent','transferEditToParent'])
+
+const transferToParent = (id) => {
+  emit('removeTodoInParent', id)
+}
+
+const transferEditTodo = (todo) => {
+  emit('transferEditToParent', todo)
+}
+
 </script>
 
 <template>
     <ul>
-        <TodoItem />
+      <!-- {{ props.todos }} -->
+        <TodoItem 
+          v-for="(todo, index) in props.todos" 
+          :key="index" 
+          :todo="todo" 
+          @removeTodo="transferToParent" 
+          @editTodo="transferEditTodo"
+          />
     </ul>
-</template>
+</template> 
 
 
 <style scoped>

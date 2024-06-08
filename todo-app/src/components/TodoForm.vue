@@ -1,14 +1,40 @@
 <script setup>
 import { ref } from 'vue';
+import {useToast} from 'vue-toast-notification';
 
-const title = ref('')
+
+const todo = ref({
+  title: '',
+  id: ''
+})
+const emit = defineEmits(['addNewTodo'])
+
+const toast = useToast();
+
+const handleTodoInput = () => {
+  try {
+    if(!todo.value.title){
+      throw new Error('Title is required!')
+    }
+
+    todo.value.id = Date.now()
+
+    emit('addNewTodo', {...todo.value}) 
+
+    todo.value.title = ''
+    todo.value.id = ''
+
+  } catch (error) {
+    toast.error(error.message)
+  }
+}
 
 </script>
 
 
 <template>
-    <form @submit.prevent="$emit('addNewTodo', title)">
-        <input type="text" v-model="title"/>
+    <form @submit.prevent="handleTodoInput">
+        <input type="text" v-model="todo.title"/>
         <button type="submit" class="submit-btn">Add To Do</button>
     </form>
 </template>
@@ -24,7 +50,6 @@ button {
 form{
   display: flex;
   align-items: center;
-  margin-bottom: 20px;
 }
 form input{
   flex: 1;
@@ -35,6 +60,9 @@ form input {
   box-sizing: border-box;
   border-radius: 4px 0 0 4px;
   border: 1px solid #b3b3b3;
+}
+form input:focus{
+  outline: 1px solid rgb(43, 124, 245);
 }
 .submit-btn{
   border-radius: 0 4px 4px 0;

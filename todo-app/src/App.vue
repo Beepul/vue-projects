@@ -1,14 +1,46 @@
 <script setup>
-// import { ref } from 'vue';
+import { onMounted, ref } from 'vue';
 import TodoForm from './components/TodoForm.vue';
 import TodoList from './components/TodoList.vue';
+import {useToast} from 'vue-toast-notification';
 
 
-// const title = ref('')
+const todos = ref([])
+const toast = useToast()
 
-const handleNewTodo = (title) => {
-  console.log(title)
+const handleNewTodo = (todo) => {
+  todos.value.push(todo)
+  localStorage.setItem('vue-todos',JSON.stringify(todos.value))
+  toast.success('Todo added successfuly');
 }
+
+const handleRemoveTodo = (id) => {
+  const newTodos = todos.value.filter((todo,i) => id !== todo.id)
+  todos.value = newTodos
+  localStorage.setItem('vue-todos',JSON.stringify(todos.value))
+  toast.success('Todo removed successfuly');
+}
+
+const handleEditTodo = (todo) => {
+  const newTodos = todos.value.map((tdo) => {
+    if(tdo.id === todo.id){
+      return todo 
+    }else {
+      return tdo
+    }
+  })
+
+  todos.value = newTodos
+  localStorage.setItem('vue-todos',JSON.stringify(todos.value))
+  toast.success('Todo edited successfully')
+}
+
+onMounted(() => {
+  const localStorageTodos = localStorage.getItem('vue-todos')
+  if(localStorageTodos){
+    todos.value = JSON.parse(localStorageTodos)
+  }
+})
 
 </script>
 
@@ -16,7 +48,11 @@ const handleNewTodo = (title) => {
   <main>
     <div class="todo-container">
       <TodoForm @addNewTodo="handleNewTodo" />
-      <TodoList />
+      <TodoList 
+        :todos="todos" 
+        @removeTodoInParent="handleRemoveTodo" 
+        @transferEditToParent="handleEditTodo"
+        />
     </div>
   </main>
 </template>
@@ -41,7 +77,6 @@ button {
 .todo-container form{
   display: flex;
   align-items: center;
-  margin-bottom: 20px;
 }
 .todo-container form input{
   flex: 1;
